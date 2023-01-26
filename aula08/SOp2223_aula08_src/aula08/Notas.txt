@@ -1,0 +1,67 @@
+APONTAMENTOS GUIAO 8
+
+-PROCESSOS (fork,exec,wait)
+-SINAIS (kill, sigaction)
+
+PID
+PPID -> Parent PID (processo criador do processo PID)
+
+getpid(); getppid(); ->da return de um pid_t
+
+
+#################################################################
+FORK - Cria um novo processo
+	Na altura em que fazemos o fork e na altura em que estamos a correr o programa, o Processo Pai vai ser igual ao do Filho
+
+		 |	Pai (PID=1000)
+		 |
+		 |
+ret== 	/ \ fork() -> chamado 1x ; retorna 2x
+1100   /   \
+Pai   /		\ ret==0
+PID  /   	 \
+=1000     	  \ Filho PID=1100
+
+
+#################################################################
+EXEC - Inicia a execucao de um programa no processo corrente
+	
+		 |	Pai (PID=1000)
+		 |
+		 |
+ret== 	/ \ fork() -> chamado 1x ; retorna 2x
+1100   /   \
+Pai   /		\ ret==0
+PID  /   	 \
+=1000     	  \ Filho PID=1100
+			  |
+			  |
+			  | 
+			  | exec("ls") - chamado 1x ; retorna 0x
+			  |
+			  | PID = 1100
+			  | O exec remove o codigo do pai no filho e coloca o do ls e depois termina o processo Filho
+
+      Em C: int exec(char *path,char *arg0, ...,NULL)
+      		*path -> caminho para ficheiro executavel
+      		*arg0,... -> defino o argv[0],argv[1],... (lista terminada com null)
+      		Nota: argc = numero de argumentos (o NULL e o Path nao contam)
+      		Nota: return <0 (-1) caso ocorra erro
+
+#################################################################
+pid_t wait(int *status);
+
+	wait -> espera por 1 processo filho
+	retorna o pid do filho que terminou
+	*status -> permite obter info sobre terminacao (exit status, ...)
+
+pid_t waitpid(pid_t pid, int *status, int options)
+
+	pid -> >0 espera por pid ; -1 espera pelo primeiro filho ; 0 espera por processo mesmo grupo
+
+
+
+int pid,pstat;
+pid=wait(&pstat);
+
+WEEXITSTATUS(pstat); -> da nos o exit statusc (o pstat contem varias informacoes para alem do exit status, mas com aquele macro ficamos apenas com o exit status);

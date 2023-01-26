@@ -1,0 +1,70 @@
+-------------------------------------------------
+Abrir ficheiro:
+
+FILE * fopen(char *path, char *mode)
+
+FILE * -> Fica NULL no caso de erro!!!
+path -> caminho rel/abs para ficheiro a abrir
+mode -> 
+		"r" - read ; "w" - write ; "a" - append; 
+		"rb"/"wb"/"ab" - Ficheiros binarios (em linux nao faz nada de diferente);
+		"r+" ; "w+" ; "a+" - Read AND write
+
+
+FILE *fp1;
+fp1 = fopen("abc.txt","r");
+
+if(fp1 == NULL){
+	ERRO
+}
+
+-------------------------------------------------
+Ler (linha a linha) do ficheiro para o Buffer que se inicia em 's':
+
+char *fgets(char*s, int size, FILE *stream);
+
+Vai ser == s ou == NULL se nao conseguiu ler
+s - end inicial do buffer
+size - tamanho do buffer (em bytes)
+
+Le ate:
+	- size-1 chars (size-1 pois o final de cada string esta reservado para '\0')
+	- atingir o fim do ficheiro
+	- apos ler o '\n'
+
+-------------------------------------------------
+Le do ficheiro e guarda numa variaval:
+
+int fscanf(FILE *stream, char *format, ...)
+
+char str1[20];
+int i; float x;
+
+fscanf(fp1, "%s %d %f",str1,&i, &x);
+
+Nota: Temos de passar os enderecos do i e do x pois em C as variaveis sao passadas por valor, logo o fscanf nao iria saber a localizacao das variaveis x e i!!!
+
+fscanf(fp1, "%[^\n]",line);
+Expressao regex -> le ate encontrar '\n', mas NAO le '\n' (Ou seja, le uma linha!);
+
+fscanf(fp1, "%[^\n]",line);
+fscanf(fp1, "%[^\n]",line);
+Na segunda repeticao o fscanf vai nos dar uma string nula (pois na primeira chamada lemos ate ao \n exclusive, pelo que o \n ainda la esta!!); Para usar o fscanf 2 vezes neste caso teriamos de fazer algo como:
+
+fscanf(fp1, "%[^\n]",line);
+fscanf(pp1,"%*c");      //Le e descarta 1 char(permite nos avancar o '\n')
+fscanf(fp1, "%[^\n]",line);
+
+
+
+-------------------------------------------------
+Funcao usada no ex 2 do guiao
+
+void qsort(void *bare, size_t nmemb, size_t size, int (*compare)(const void *,const void *)
+
+qsort - FUncao generica de ordenacao de arrays
+bare - end inicial do array
+nmemb - n de elementos do array
+size - n de bytes de cada elem
+compare - ponteiro para funcao que tem 2 parametros void * e retorna int
+int (antes do compare) - 0 se iguais ; >0 se o 1º parametro for mair ; <0 se 1º parametro for menor
